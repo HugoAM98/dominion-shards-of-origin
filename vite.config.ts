@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite';
 
-const repoBase = '/dominion-shards-of-origin/';
+const pagesBase = '/dominion-shards-of-origin/';
 
-export default defineConfig({
-  base: process.env.GITHUB_ACTIONS === 'true' ? repoBase : './',
+export default defineConfig(({ mode }) => ({
+  base: mode === 'pages' ? pagesBase : './',
   build: {
     target: 'es2022',
     chunkSizeWarningLimit: 1600,
@@ -12,4 +12,4 @@ export default defineConfig({
     host: true,
     port: 5173,
   },
-});
+}));

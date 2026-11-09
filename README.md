@@ -29,13 +29,17 @@ npm run preview
 
 Progreso en `localStorage` del navegador.
 
-## Demo en GitHub Pages
+## Jugar online
 
-Tras el primer push a `main`, activa **GitHub Pages** en el repo (origen: *GitHub Actions*). La URL será:
+**https://hugoam98.github.io/dominion-shards-of-origin/**
 
-`https://HugoAM98.github.io/dominion-shards-of-origin/`
+Para publicar una nueva versión:
 
-(Ajusta `base` en `vite.config.ts` si el nombre del repo cambia.)
+```bash
+npm run deploy
+```
+
+Compila con la ruta base de GitHub Pages y sube `dist/` a la rama `gh-pages`. Si cambia el nombre del repo, actualiza `pagesBase` en `vite.config.ts`.
 
 ## Documentación de diseño
 
