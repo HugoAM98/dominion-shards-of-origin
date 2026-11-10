@@ -4,7 +4,6 @@ import type { AppRouteParams } from './ui/router';
 import { renderScreen } from './ui/router';
 import './ui/screens/menu';
 import './ui/screens/worldmap';
-import './ui/screens/campaign';
 import './ui/screens/battle';
 import './ui/screens/summon';
 import './ui/screens/collection';

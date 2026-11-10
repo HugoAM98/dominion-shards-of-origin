@@ -1,44 +1,48 @@
+import { citadelImg, iconImg } from '../../art/atlas';
 import { buildTowerMission } from '../../data/tower';
 import { registerScreen } from '../router';
-import { btn, currencyStrip, el } from '../components';
+import { btn, currencyStrip, el, topBar } from '../components';
+
+const VISIBLE = 7;
 
 registerScreen('tower', (ctx) => {
   const shell = el('section', 'screen screen-tower');
-  shell.appendChild(
-    el('header', 'top-bar', [
-      btn('← Menú', 'btn btn-ghost btn-back', () => ctx.navigate('menu')),
-      el('h1', 'screen-title', ['Torre del Infinito']),
+  shell.append(topBar('Torre del Infinito', () => ctx.navigate('menu'), currencyStrip(ctx.player.shardDust, ctx.player.originFragments)));
+
+  const best = ctx.player.towerBestFloor;
+  const next = Math.min(50, best + 1);
+  const go = (floor: number) =>
+    ctx.navigate('battle', { mission: buildTowerMission(floor), mode: 'tower', towerFloor: floor, returnScreen: 'tower' });
+
+  const spire = el('div', 'tower-spire');
+  const top = Math.min(50, Math.max(VISIBLE, next + 3));
+  for (let f = top; f > top - VISIBLE; f--) {
+    const state = f <= best ? 'is-done' : f === next ? 'is-next' : 'is-locked';
+    const m = buildTowerMission(f);
+    const floor = el('div', `tower-floor ${state}`, [
+      el('span', 'floor-num', [String(f)]),
+      el('span', 'floor-info', [
+        f === next ? citadelImg(m.enemyFaction, 1, 'px') : iconImg(f <= best ? 'star' : 'lock', 2),
+        el('small', '', [f === next ? `Ciudadela ${m.enemyBaseHp}` : f <= best ? 'Superado' : '—']),
+      ]),
+    ]);
+    spire.append(floor);
+  }
+
+  const m = buildTowerMission(next);
+  const panel = el('div', 'tower-panel px-panel', [
+    el('p', 'brief-index', ['Desafío sin fin']),
+    el('h2', '', [`Piso ${next}`]),
+    el('p', 'brief-text', ['Cada piso refuerza la ciudadela enemiga y mejora el botín. ¿Hasta dónde llegará tu escuadra?']),
+    el('div', 'brief-stats', [
+      el('span', 'px-inset', [iconImg('star', 2), `Récord ${best}`]),
+      el('span', 'px-inset', [iconImg('fragment', 2), `${m.rewardFragments}`]),
+      el('span', 'px-inset', [iconImg('dust', 2), `${m.rewardDust}`]),
     ]),
-  );
-
-  const nextFloor = Math.max(1, ctx.player.towerBestFloor + 1);
-  const panel = el('div', 'tower-panel');
-  panel.innerHTML = `
-    <div class="tower-visual" aria-hidden="true"></div>
-    <p class="tower-record">Récord: piso <strong>${ctx.player.towerBestFloor}</strong></p>
-    <p class="tower-desc">Batallas escalables sin fin. Cada piso aumenta la vida del nexo enemigo y las recompensas.</p>
-  `;
-
-  const actions = el('div', 'tower-actions', [
-    btn(`Comenzar piso ${nextFloor}`, 'btn btn-primary btn-lg', () => {
-      const mission = buildTowerMission(nextFloor);
-      ctx.navigate('battle', {
-        mission,
-        mode: 'tower',
-        towerFloor: nextFloor,
-        returnScreen: 'tower',
-      });
-    }),
-    btn('Entrenamiento (piso 1)', 'btn btn-ghost', () => {
-      ctx.navigate('battle', {
-        mission: buildTowerMission(1),
-        mode: 'tower',
-        towerFloor: 1,
-        returnScreen: 'tower',
-      });
-    }),
+    btn(`Subir al piso ${next}`, 'teal', () => go(next), 'tower'),
+    btn('Entrenar en el piso 1', 'ghost', () => go(1), undefined, 'pxbtn-sm'),
   ]);
 
-  shell.append(currencyStrip(ctx.player.shardDust, ctx.player.originFragments), panel, actions);
+  shell.append(el('div', 'tower-layout', [el('div', 'tower-wrap px-inset', [spire]), panel]));
   return shell;
 });

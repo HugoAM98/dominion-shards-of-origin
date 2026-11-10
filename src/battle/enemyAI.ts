@@ -12,7 +12,7 @@ const ENEMY_DECK: Record<string, string[]> = {
 };
 
 export class EnemyAIController {
-  private timer = 0;
+  private timer = 2;
   private deck: string[];
   private deckIndex = 0;
 
@@ -26,13 +26,16 @@ export class EnemyAIController {
     if (this.timer > 0) return;
 
     const creatureId = this.deck[this.deckIndex % this.deck.length];
-    this.deckIndex++;
     const cost = CREATURES[creatureId]?.stats.deployCost ?? 99;
     if (sim.enemyEnergy < cost) {
       this.timer = 0.25;
       return;
     }
-    const deployed = sim.deploy('enemy', creatureId, 1);
-    this.timer = deployed ? 1.8 + Math.random() * 1.2 : 0.35;
+    if (sim.deploy('enemy', creatureId, 1)) {
+      this.deckIndex++;
+      this.timer = 1.8 + Math.random() * 1.2;
+    } else {
+      this.timer = 0.35;
+    }
   }
 }

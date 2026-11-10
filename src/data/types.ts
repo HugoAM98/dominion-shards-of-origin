@@ -74,7 +74,6 @@ export interface GachaPoolEntry {
 export type ScreenId =
   | 'menu'
   | 'worldmap'
-  | 'campaign'
   | 'battle'
   | 'summon'
   | 'collection'
